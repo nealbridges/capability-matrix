@@ -120,15 +120,26 @@ speculative-decode on sm_120, and current nightlies fail to load the model.
 
 This stack is almost entirely other people's work.
 
+**In the serving path** — remove any of these and nothing runs:
+
 | Credit | For |
 |---|---|
 | **DeepSeek** | The base model, V4-Flash-0731 |
 | **apetersson** | `DeepSeek-V4-Flash-0731-Abliterated-FP8`. The weights served here. MIT, with published reproduction tooling. Most other 0731 abliterations derive from it |
-| **anemll** | `dspark-vllm-gx10`. The serving image. There is no spec-decode on this silicon without it |
-| **tonyd2wild** | `DeepSeek-v4-Flash-DSpark-1M-NVFP4-KV-2x-DGX-Spark`. The NVFP4 KV recipe this configuration derives from |
+| **anemll** | `dspark-vllm-gx10`. The serving image, carrying vLLM PR #41834 and DeepGEMM PR #324. Stock vLLM cannot speculative-decode on sm_120 and current nightlies fail to load the model |
+| **vLLM, DeepGEMM** | The serving stack and those two patches |
+
+**Recipe lineage** — the published work this configuration descends from, even where no line of it is
+referenced directly:
+
+| Credit | For |
+|---|---|
+| **tonyd2wild** | `DeepSeek-v4-Flash-DSpark-1M-NVFP4-KV-2x-DGX-Spark`. The NVFP4 KV approach |
 | **MiaAI-Lab** | `DeepSeek-v4-Flash-DSpark-2x-DGX-Spark`. Dual-Spark recipe lineage |
 | **elsung** | `dgx-spark-deepseek-v4-flash`. TP=2 FP8 dual-Spark recipe |
-| **vLLM, DeepGEMM** | The serving stack and the two patches this image carries |
+
+The tuning on top — sequence and batch-token limits, CUDA graph capture, reasoning parser — is ours,
+from a measurement window on 2026-08-28.
 
 ---
 
