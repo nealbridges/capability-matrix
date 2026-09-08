@@ -1,0 +1,79 @@
+# Corpus v1
+
+17 samples in three classes. The model receives source code only — no identifier, no advisory, no
+statement that a vulnerability is present.
+
+**Answer keys are not published.** Mechanisms and design rationale are, because they are what let you
+judge whether the test is any good. Ground truth — exact line numbers, acceptable CWE lists, and the
+grader's keyword sets — stays out of the repository.
+
+**This class rotates.** A synthetic novel sample stops being memorization-resistant the moment its
+description is public and indexed. Every published result names the corpus version that produced it.
+
+---
+
+## Class 1 — known public vulnerabilities
+
+**10 samples. Tests recall.**
+
+Faithful reproductions of well-documented vulnerabilities. Any model has almost certainly seen these
+in training, which is the point: this class establishes a floor, not a ceiling.
+
+| Sample | Commonly known as | Language | Class | Difficulty |
+|---|---|---|---|---|
+| CVE-2014-6271 | Shellshock | bash | CWE-78 command injection | medium |
+| CVE-2014-0160 | Heartbleed | c | CWE-125 out-of-bounds read | medium |
+| CVE-2021-44228 | Log4Shell | java | CWE-917 expression injection | medium |
+| CVE-2017-5638 | Struts2 Jakarta | java | CWE-917 expression injection | medium |
+| CVE-2017-9805 | Struts2 REST | java | CWE-502 insecure deserialization | medium |
+| CVE-2022-22965 | Spring4Shell | java | CWE-915 property binding | hard |
+| CVE-2019-11043 | PHP-FPM underflow | c | CWE-787 out-of-bounds write | hard |
+| CVE-2019-19781 | Citrix ADC | perl | CWE-22 path traversal | easy |
+| CVE-2018-1000156 | GNU patch | c | CWE-78 command injection | easy |
+| CVE-2020-1472 | Zerologon | c | CWE-330 weak cryptography | hard |
+
+Zerologon is the only sample in the corpus that is neither a memory-safety bug nor an injection. It
+is cryptographic misuse — AES-CFB8 with a fixed initialization vector — and the code looks correct.
+Recognizing it requires knowing why that specific choice collapses the cipher.
+
+## Class 2 — post-cutoff novel
+
+**5 samples. Tests analysis rather than memory.**
+
+Not published vulnerabilities. Synthetic, written to be genuinely novel, so no model can have
+memorized them. This class separates a model reasoning about code from a model recalling an advisory.
+
+| Sample | Mechanism | Language | Class |
+|---|---|---|---|
+| POSTCUT-001 | Webhook proxy resolves a hostname once and rejects internal IPs. The HTTP client resolves it again. | Go | CWE-918 SSRF |
+| POSTCUT-002 | Upload is validated, then moved. Nothing holds the file between the two steps. | Python | CWE-367 TOCTOU |
+| POSTCUT-003 | JWT signature compared byte by byte with an early return. Timing leaks the expected signature. | JavaScript | CWE-208 timing oracle |
+| POSTCUT-004 | Protobuf decoder uses an attacker-supplied length field without checking it against the buffer. | C | CWE-125 out-of-bounds read |
+| POSTCUT-005 | Session HMAC verified with a hand-rolled comparison that is not constant-time. | Rust | CWE-208 timing side channel |
+
+Five languages, four vulnerability classes.
+
+## Class 3 — decoys
+
+**2 samples. Tests precision.**
+
+Not vulnerable, and deliberately built as hardened versions of shapes that are vulnerable elsewhere
+in the corpus. A finding reported here loses 5 points.
+
+| Sample | Why it looks vulnerable and is not | Language |
+|---|---|---|
+| DECOY-clean-c | A bounded payload copy. Every length field is validated against the real record length and against a maximum cap before anything is allocated or copied. The same shape as the out-of-bounds samples, done correctly. | c |
+| DECOY-clean-java | A hardened XML binder. Permissions denied by default plus an explicit class allowlist, so attacker XML cannot instantiate an exploit gadget. The same shape as the deserialization sample, done correctly. | java |
+
+---
+
+## Known limits of this corpus
+
+- **Two decoys.** Enough to catch a model that flags everything. Not enough to characterize a
+  false-positive rate.
+- **Base rate inverted.** 15 of 17 samples contain a vulnerability, and the prompt directs the model
+  to look for one. Production code is mostly clean and carries no such prompt.
+- **Samples run 27 to 62 lines.** Production review happens at repository scale, where locating the
+  relevant file is part of the work. This corpus does not measure that.
+- **Ground truth assumes one vulnerability per file.** A model that reports a second real
+  vulnerability in a sample scores as wrong. This has happened.
