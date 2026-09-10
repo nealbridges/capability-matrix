@@ -102,8 +102,13 @@ description is public and indexed. Rotation is publication-driven: roughly five 
 year, since one corpus version serves many models. One novel sample is **withheld from publication
 as a contamination canary** — the only such detector available to us.
 
-**Class 1, known public vulnerabilities. Recency floor: at least half of this class within four
-years of the current date, checked at every release.**
+**Class 1, known public vulnerabilities. Recency floor: at least eight samples in this class within
+four years of the current date, checked at every release.**
+
+The floor is **absolute, not proportional**, and that is deliberate. A proportional floor fights the
+rule below it: every legacy sample kept as a memorization anchor would raise the bar, so retaining
+Heartbleed would create an obligation to author another recent sample. An absolute floor sets a
+recency requirement without penalising the anchors.
 
 Two reasons, and the second matters more than the first:
 
