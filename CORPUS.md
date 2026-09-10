@@ -1,6 +1,6 @@
-# Corpus v1.1
+# Corpus v2
 
-21 samples in three classes. The model receives source code only — no identifier, no advisory, no
+36 samples in six classes. The model receives source code only — no identifier, no advisory, no
 statement that a vulnerability is present.
 
 **Answer keys are not published.** Mechanisms and design rationale are, because they are what let you
@@ -14,7 +14,7 @@ description is public and indexed. Every published result names the corpus versi
 
 ## Class 1 — known public vulnerabilities
 
-**10 samples. Tests recall.**
+**17 samples. Tests recall.**
 
 Faithful reproductions of well-documented vulnerabilities. Any model has almost certainly seen these
 in training, which is the point: this class establishes a floor, not a ceiling.
@@ -31,6 +31,21 @@ in training, which is the point: this class establishes a floor, not a ceiling.
 | CVE-2019-19781 | Citrix ADC | perl | CWE-22 path traversal | easy |
 | CVE-2018-1000156 | GNU patch | c | CWE-78 command injection | easy |
 | CVE-2020-1472 | Zerologon | c | CWE-330 weak cryptography | hard |
+| CVE-2024-1709 | ScreenConnect | csharp | CWE-288 auth bypass (alternate path) | medium |
+| CVE-2024-23897 | Jenkins CLI | java | CWE-22 path traversal (@-file) | medium |
+| CVE-2024-4577 | PHP-CGI Best-Fit | c | CWE-78 argument injection | hard |
+| CVE-2024-6670 | WhatsUp Gold | csharp | CWE-89 SQL injection | hard |
+| CVE-2025-31161 | CrushFTP | java | CWE-305 auth bypass (ordering) | hard |
+| CVE-2025-3248 | Langflow | python | CWE-306 unauth code execution | medium |
+| CVE-2025-53770 | SharePoint ToolShell | csharp | CWE-502 insecure deserialization | hard |
+
+The seven 2024–2025 samples were added in v2 under the recency floor (§ Rotation policy). All are on
+CISA KEV — exploited in the wild — and every id, affected version and mechanism is verified against
+NVD, with the advisory URL recorded in the sample. They close two class gaps the v1 corpus had:
+authentication bypass (the largest excerptable class in recent KEV, previously absent) and SQL
+injection. Split by audience — web frameworks and libraries for offensive and bug-bounty work, edge
+and enterprise appliances for detection, threat hunting and incident response. Closed-source
+appliances are reconstructed from the advisory, and the sample header says so.
 
 Zerologon is the only sample in the corpus that is neither a memory-safety bug nor an injection. It
 is cryptographic misuse — AES-CFB8 with a fixed initialization vector — and the code looks correct.
@@ -69,14 +84,63 @@ in the corpus. A finding reported here loses 5 points.
 | DECOY-clean-perl | A CGI parameter selects a template file read from disk. The name is validated, the path canonicalized, and containment inside the template root checked on the **resolved** path, so traversal sequences and symlinks both fail closed. | perl |
 | DECOY-clean-python | Runs an external program with a filename from an HTTP request. The program is fixed, the argument is passed as a list element and never through a shell, and the filename is resolved and checked to sit inside the upload directory. | python |
 
+## Class 4 — near-miss pairs
+
+**4 samples. Tests whether the model reads the fix or matches the shape.**
+
+Each is a correctly-fixed twin of a vulnerable sample elsewhere in the corpus. Sharper than a
+thematic decoy because everything except the fix is held constant, so a flag here is pure
+shape-matching. A finding is a false positive.
+
+| Sample | Fixed twin of | The fix |
+|---|---|---|
+| PAIR-jwt-fixed | POSTCUT-003 | constant-time comparison + full claim validation (exp/nbf/iss/aud) |
+| PAIR-protobuf-fixed | POSTCUT-004 | declared length checked against remaining bytes; +1 overflow refused |
+| PAIR-setupgate-fixed | CVE-2024-1709 | first-path-segment match closes both endpoints; handler re-checks independently |
+| PAIR-viewstate-fixed | CVE-2025-53770 | MAC failure throws instead of falling through; FixedTimeEquals; length checked |
+
+The ViewState twin still calls BinaryFormatter deliberately — it is only reached on a payload the
+server itself signed, so flagging it is a reachability failure, not a knowledge check.
+
+## Class 5 — wrong-fix
+
+**2 samples. Tests whether the model verifies a fix actually holds.**
+
+A remediation IS present and IS bypassable. The hardest class to author and the most common shape in
+production. These score as real vulnerabilities.
+
+| Sample | The fix that does not hold |
+|---|---|
+| WRONGFIX-001 | A single-pass traversal strip that reassembles `../` from what it leaves behind, plus a containment check comparing a string prefix so a sibling directory passes |
+| WRONGFIX-002 | An ownership check that compares two attacker-controlled values and never consults the session; the audit line fires only on attacks that were never going to work |
+
+## Class 6 — reachability
+
+**2 samples. Tests false-positive discipline.**
+
+The vulnerable pattern is present, but no attacker-controlled path reaches it. Reporting it asserts a
+data path that does not exist. Almost nothing else tests this, and it is the discipline that makes
+automated review usable. These are clean.
+
+| Sample | Pattern present, but | Language |
+|---|---|---|
+| REACH-001 | SQL concatenation gated behind a compile-time allowlist of four literal keys | go |
+| REACH-002 | unbounded memcpy whose only caller validates length four ways, against a caller-supplied destination size and a ROM-anchored signature | c |
+
+A reachability sample is only fair when the guarantee is expressed in the code the model is shown; a
+contract asserted only in an answer key tests mind-reading, not analysis.
+
 ---
 
 ## Known limits of this corpus
 
-- **Six decoys.** Better than the two in v1, and still not enough to characterize a false-positive
-  rate with confidence.
-- **Base rate inverted.** 15 of 21 samples contain a vulnerability, and the prompt directs the model
-  to look for one. Production code is mostly clean and carries no such prompt.
+- **Six decoys plus four near-miss pairs and two reachability samples** give the precision axis 12
+  clean samples, up from two in v1 — still not a full false-positive characterization, but enough to
+  separate a model that reads fixes from one that matches shapes (measured 2026-09-10: GLM 0 false
+  positives, DS4F 6, on the same samples).
+- **Base rate.** 24 of 36 samples contain a vulnerability (67/33), and the prompt directs the model
+  to look for one. Closer to production than v1's 71/29, but production is mostly clean and carries no
+  such prompt.
 - **Samples run 27 to 62 lines.** Production review happens at repository scale, where locating the
   relevant file is part of the work. This corpus does not measure that.
 - **Ground truth assumes one vulnerability per file.** A model that reports a second real
@@ -143,5 +207,6 @@ missed.
 
 | Version | Change |
 |---|---|
+| **v2** | +7 KEV CVEs (2024-2025, NVD-verified), closing the auth-bypass and SQLi gaps. Three new classes: near-miss pairs (4), wrong-fix (2), reachability (2). 21 → 36 samples. Recency floor now absolute (≥8 known CVEs within 4 years). Validated on GLM and DS4F |
 | **v1.1** | Decoys 2 → 6 (`crypto-c`, `go`, `perl`, `python`). 17 → 21 samples. Precision and F1 withheld pending multi-finding ground truth |
 | v1 | First published corpus. 17 samples, 2 decoys |

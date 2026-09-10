@@ -10,6 +10,8 @@ quantization, topology, serving image digest and version, and observed throughpu
 
 A result with no conditions block is not publishable.
 
+The current corpus is **v2** (36 samples, six classes); see [CORPUS.md](../CORPUS.md). Published rows name the corpus version they were measured on and are not re-run when the corpus grows.
+
 **Rows are not directly comparable across method versions on the gates that changed.** Method v2
 grades the exploit-proof gate by rubric rather than by pattern match; a v1 proof number is a
 pattern-match number. Prior results are not re-run when the method improves — they are read against
