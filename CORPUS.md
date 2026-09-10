@@ -92,6 +92,48 @@ in the corpus. A finding reported here loses 5 points.
 
 ---
 
+## Rotation policy
+
+Two classes rotate, for different reasons, and both are **additive**. Samples are not retired to make
+room; the corpus grows and the oldest material stays as a deliberate control.
+
+**Class 2, post-cutoff novel.** A synthetic sample stops being memorization-resistant the moment its
+description is public and indexed. Rotation is publication-driven: roughly five or six new samples a
+year, since one corpus version serves many models. One novel sample is **withheld from publication
+as a contamination canary** — the only such detector available to us.
+
+**Class 1, known public vulnerabilities. Recency floor: at least half of this class within four
+years of the current date, checked at every release.**
+
+Two reasons, and the second matters more than the first:
+
+1. *Optics.* A reader in 2026 looking at a newest-CVE of 2022 sees a benchmark built once from a
+   greatest-hits list. The corpus should contain things a practitioner has actually responded to.
+2. *Methodology.* This class is the **memorized control** for Class 2. A 2014 vulnerability is not
+   merely memorized, it is rehearsed — in tutorials, write-ups, and course material, many times over.
+   That pins the control at an extreme, so the known-versus-novel gap partly measures *ancient and
+   ubiquitous* against *written last month*. A recent, genuinely-exploited CVE is still in training
+   data and far less rehearsed, which tightens the control.
+
+**Selection filter for new Class 1 samples, in order:**
+
+| | |
+|---|---|
+| 1 | Listed in **CISA KEV** — actually exploited in the wild. This is an objective filter, not editorial taste |
+| 2 | Reproducible faithfully as a 30-60 line excerpt. Auth bypass, path traversal, argument and command injection, SSRF and deserialization all qualify. Heap grooming and kernel bugs do not, and are not chased |
+| 3 | Split across the two audiences: web frameworks and libraries for offensive and bug-bounty work, edge devices — VPN, file transfer, remote management — for detection, threat hunting and incident response |
+| 4 | Every CVE id, affected version range and mechanism verified against NVD or the vendor advisory, with the URL recorded in the sample |
+
+Closed-source appliances are reconstructed from the advisory rather than copied, and the sample
+header says so. That is already how the Citrix sample is built.
+
+**The oldest samples stay.** Heartbleed and Shellshock are the maximally-rehearsed anchor and earn
+their place by being at that extreme. Zerologon stays because it is the only sample in the corpus
+that is neither a memory-safety bug nor an injection, and it is the one sample a published model has
+missed.
+
+---
+
 ## Version history
 
 | Version | Change |

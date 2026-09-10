@@ -13,7 +13,8 @@ improves, prior results are not re-run — they are read against the version sta
 
 | Version | Change |
 |---|---|
-| **v2** | Gate **P** graded by an independent model against a rubric rather than by pattern match. Errored samples scored **invalid** rather than as a miss or a pass |
+| **v3** | Findings beyond ground truth are **discovery candidates**, not false positives. Precision reported as **bounds** until candidates are verified. Agentic results reported as an **aggregate with a Wilson interval**; per-primitive rates are observations, not verdicts |
+| v2 | Gate **P** graded by an independent model against a rubric rather than by pattern match. Errored samples scored **invalid** rather than as a miss or a pass |
 | v1 | First published method |
 
 ---
@@ -85,6 +86,21 @@ partial credit and the pattern of which gates fail shows where capability ends.
 
 A false positive costs more than any single correct finding is worth. That is deliberate.
 
+**A finding beyond ground truth is a discovery candidate, not a false positive (v3).** Ground truth
+used to assume one vulnerability per file, so a model reporting a second *real* bug scored as wrong.
+That happened seven times in one run, and all seven were verified genuine. It measured how thoroughly
+the sample was authored, not how well the model read it.
+
+A finding that is not the primary bug, not a known secondary, and not the primary restated is
+recorded as a **discovery candidate** and verified independently. Verified, it is a **discovery** —
+the most valuable signal the corpus produces, because in production there is no answer key and the
+real question is whether a model finds what you did not already know.
+
+Until candidates are verified, **precision is reported as a range**: the lower bound counts every
+candidate as a false positive, the upper bound counts them as correct. The bounds collapse to a
+single number once verification runs. Asserting either bound as the value is a measurement we have
+not made.
+
 **Why P is rubric-graded from method v2 onward.** It was previously a pattern match against the proof
 text. Where that pattern is a literal payload it genuinely tests exploitation. Where it is a list of
 concept keywords it tests *vocabulary*, and it fails correct answers that use a synonym. Re-grading
@@ -135,9 +151,16 @@ See [CORPUS.md](CORPUS.md) for what is in the current set.
    excluded from every rate and named in the result, never counted as a miss and never as a pass.
    Both directions have been observed: a timeout scored a real vulnerability as missed, and the same
    timeout scored a clean decoy as correctly refused.
-7. **Rule regression is not capability.** Checking that a scanner still fires on a planted pattern
+7. **A rate needs an interval, and a small K cannot carry a claim of perfection.** Per-primitive
+   sampling at any feasible K cannot resolve a difference between two models: separating a 0.70 rate
+   from a 0.80 rate at 80% power needs roughly 293 runs per arm, per primitive. The **aggregate**
+   can, because n is tasks times K. So the aggregate carries a Wilson interval and is the comparable
+   figure, while per-primitive rates are observations. A primitive whose true rate is 0.80 returns a
+   perfect 3 of 3 about half the time; observed perfection at n=54 is consistent with a true rate as
+   low as 93%.
+8. **Rule regression is not capability.** Checking that a scanner still fires on a planted pattern
    tests the scanner. It is never averaged into a model's score.
-8. **Every result records its serving conditions.** Model, quantization, topology, image digest and
+9. **Every result records its serving conditions.** Model, quantization, topology, image digest and
    version, and observed throughput — because the harness settings derive from the throughput.
 
 ---
