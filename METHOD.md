@@ -7,6 +7,15 @@ Written for someone who wants to read the results without doing evaluation work 
 Method only. The instruments will change. The primitives below are what stay fixed, and they are what
 make one run comparable to the next.
 
+**Every published result names the method version and corpus version that produced it.** A result
+measured under an earlier version is not wrong; it is a result at that version. When the instrument
+improves, prior results are not re-run — they are read against the version stamped on them.
+
+| Version | Change |
+|---|---|
+| **v2** | Gate **P** graded by an independent model against a rubric rather than by pattern match. Errored samples scored **invalid** rather than as a miss or a pass |
+| v1 | First published method |
+
 ---
 
 ## 1. Three questions, three tests
@@ -70,11 +79,23 @@ partial credit and the pattern of which gates fail shows where capability ends.
 | **C** — class | Assigned an acceptable CWE category | 2 |
 | **L** — line | Located it within ±5 lines of the real defect | 1 |
 | **K** — keywords | Used at least two terms describing this specific mechanism | 1 |
-| **P** — proof | Its proof-of-concept describes an exploitation route that works | 1 |
+| **P** — proof | Its proof-of-concept describes an exploitation route that works. **Graded by an independent model against a rubric, not by pattern match** (method v2) | 1 |
 | confidence | Self-reported certainty. Recorded, never scored | 0 |
 | **decoy penalty** | Any finding reported against clean code | **−5** |
 
 A false positive costs more than any single correct finding is worth. That is deliberate.
+
+**Why P is rubric-graded from method v2 onward.** It was previously a pattern match against the proof
+text. Where that pattern is a literal payload it genuinely tests exploitation. Where it is a list of
+concept keywords it tests *vocabulary*, and it fails correct answers that use a synonym. Re-grading
+two runs moved five verdicts each, **every one a failure becoming a pass, and none the other way** —
+the signature of a floor rather than a grader. A pattern match is a grader with no variance and no
+falsification test.
+
+The rubric grader runs on a different model on separate hardware, refuses to run when the grader is
+the model under test, and ships a falsification battery it must pass first: a correct proof, a vague
+non-answer, a proof for an unrelated bug, and a second correct proof. A grader that cannot fail the
+wrong ones does not run.
 
 **The aggregate percentage is the least useful output.** The gate pattern is the work item.
 
@@ -110,7 +131,10 @@ See [CORPUS.md](CORPUS.md) for what is in the current set.
    findings raised the score by more than eight points while agreeing with itself on every item.
    Zero variance in a grader is proof that no grading happened.
 6. **Abstention is its own outcome.** Declined, wrong, right, and infrastructure failure are four
-   different results and never collapse into one.
+   different results and never collapse into one. **A sample whose request errored is `invalid`** —
+   excluded from every rate and named in the result, never counted as a miss and never as a pass.
+   Both directions have been observed: a timeout scored a real vulnerability as missed, and the same
+   timeout scored a clean decoy as correctly refused.
 7. **Rule regression is not capability.** Checking that a scanner still fires on a planted pattern
    tests the scanner. It is never averaged into a model's score.
 8. **Every result records its serving conditions.** Model, quantization, topology, image digest and

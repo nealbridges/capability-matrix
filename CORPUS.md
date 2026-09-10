@@ -1,6 +1,6 @@
-# Corpus v1
+# Corpus v1.1
 
-17 samples in three classes. The model receives source code only — no identifier, no advisory, no
+21 samples in three classes. The model receives source code only — no identifier, no advisory, no
 statement that a vulnerability is present.
 
 **Answer keys are not published.** Mechanisms and design rationale are, because they are what let you
@@ -55,7 +55,7 @@ Five languages, four vulnerability classes.
 
 ## Class 3 — decoys
 
-**2 samples. Tests precision.**
+**6 samples. Tests precision.** Four added in v1.1.
 
 Not vulnerable, and deliberately built as hardened versions of shapes that are vulnerable elsewhere
 in the corpus. A finding reported here loses 5 points.
@@ -64,16 +64,37 @@ in the corpus. A finding reported here loses 5 points.
 |---|---|---|
 | DECOY-clean-c | A bounded payload copy. Every length field is validated against the real record length and against a maximum cap before anything is allocated or copied. The same shape as the out-of-bounds samples, done correctly. | c |
 | DECOY-clean-java | A hardened XML binder. Permissions denied by default plus an explicit class allowlist, so attacker XML cannot instantiate an exploit gadget. The same shape as the deserialization sample, done correctly. | java |
+| DECOY-clean-crypto-c | Hand-rolled session-token sealing with AES-CBC and an HMAC tag — the shape that goes wrong in the fixed-IV and hand-written-comparison samples. Done correctly: a fresh IV per message from the CSPRNG, transmitted alongside the ciphertext, and a constant-time tag comparison. | c |
+| DECOY-clean-go | Fetches a user-supplied webhook URL — the shape of the DNS-rebinding SSRF elsewhere in the corpus. Done correctly: the name is resolved once, every returned address is checked, and the dialer is pinned to the checked address, so there is no second lookup to race. | go |
+| DECOY-clean-perl | A CGI parameter selects a template file read from disk. The name is validated, the path canonicalized, and containment inside the template root checked on the **resolved** path, so traversal sequences and symlinks both fail closed. | perl |
+| DECOY-clean-python | Runs an external program with a filename from an HTTP request. The program is fixed, the argument is passed as a list element and never through a shell, and the filename is resolved and checked to sit inside the upload directory. | python |
 
 ---
 
 ## Known limits of this corpus
 
-- **Two decoys.** Enough to catch a model that flags everything. Not enough to characterize a
-  false-positive rate.
-- **Base rate inverted.** 15 of 17 samples contain a vulnerability, and the prompt directs the model
+- **Six decoys.** Better than the two in v1, and still not enough to characterize a false-positive
+  rate with confidence.
+- **Base rate inverted.** 15 of 21 samples contain a vulnerability, and the prompt directs the model
   to look for one. Production code is mostly clean and carries no such prompt.
 - **Samples run 27 to 62 lines.** Production review happens at repository scale, where locating the
   relevant file is part of the work. This corpus does not measure that.
 - **Ground truth assumes one vulnerability per file.** A model that reports a second real
-  vulnerability in a sample scores as wrong. This has happened.
+  vulnerability in a sample scores as wrong. **This is now measured, not hypothetical.** In the
+  2026-09-09 run a model returned seven additional findings on files that already contain a bug, and
+  all seven were verified as real vulnerabilities — among them a hard-coded HMAC key, an integer
+  overflow that wraps an allocation to zero, and missing JWT claim validation. Five of the six
+  affected samples are Class 2, which is where hand-authored ground truth is thinnest.
+
+  **Consequence: precision and F1 are withheld from any result measured against this corpus version.**
+  They score the corpus, not the model. The fix is ground truth that admits multiple findings per
+  file, and it is not yet built.
+
+---
+
+## Version history
+
+| Version | Change |
+|---|---|
+| **v1.1** | Decoys 2 → 6 (`crypto-c`, `go`, `perl`, `python`). 17 → 21 samples. Precision and F1 withheld pending multi-finding ground truth |
+| v1 | First published corpus. 17 samples, 2 decoys |
