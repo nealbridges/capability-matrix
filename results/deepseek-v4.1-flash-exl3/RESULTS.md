@@ -318,11 +318,12 @@ measuring.** Arm identity in this release comes from the run directory, the run 
 configuration read off the host, not from the artifact. This is the gap that the conditions block
 exists to close and it was not closed on this row.
 
-[^verbosity]: Measured on the live abliterated arm, same corpus and same reasoning effort as the
-stock arm: **roughly 45 seconds per recognition sample against the stock arm's 10**, at a decode
-rate of ~51 tok/s that is unchanged between arms. The model emits several times more, it is not
-slower. That puts a K=5 pass at a few hours rather than the stock arm's half hour, which is a
-scheduling fact rather than a reason not to run it.
+[^verbosity]: Per-run wall time for the full 36-sample corpus, same reasoning effort on both arms:
+stock **285 / 277 / 285 / 279 / 298 s**, abliterated **355 s**. That is **1.25x**, in line with the
+1.28x this overlay costs on schema-bound prompts generally. The abliterated arm is substantially
+more verbose on open-ended prompts, but the recognition corpus is schema-bound and the effect there
+is small. Decode rate is single-stream throughout — the bench issues one sample at a time, so these
+are serialization times, not throughput-limited ones.
 
 ---
 
