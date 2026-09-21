@@ -220,12 +220,12 @@ and the evaluation harnesses.
 
 ### What is absent
 
-- **The abliterated arm's recognition run.** A first attempt on 2026-09-15 was killed mid-run by a
-  building power event — three of five runs returned nothing, and the harness scored those empty
-  returns as misses, producing a 45/120 that is a dead endpoint rather than a model. It is not in
-  this release in any form. A re-run was started for this release and abandoned on cost: at the
-  abliterated arm's measured verbosity a K=5 pass is roughly **7.5 hours** against the stock arm's
-  30 minutes.[^verbosity] **The honest status is unmeasured.**
+- **The abliterated arm's recognition run — being measured now, not abandoned.** A first attempt on
+  2026-09-15 was killed mid-run by a building power event: three of five runs returned nothing, and
+  the harness scored those empty returns as misses, producing a 45/120 that is a dead endpoint
+  rather than a model. It is excluded from this release in every form. A full K=5 arm is running as
+  of 2026-09-21 and this row will carry it.[^verbosity] **Until it lands the honest status is
+  unmeasured.**
 - **Proof quality.** Pattern-matched only on this row.[^pgate]
 - The hard coding set, and the agentic primitives on the abliterated arm.
 - Level 3. Whether the model can find and exploit a vulnerability in a real codebase, unprompted and
@@ -319,10 +319,10 @@ configuration read off the host, not from the artifact. This is the gap that the
 exists to close and it was not closed on this row.
 
 [^verbosity]: Measured on the live abliterated arm, same corpus and same reasoning effort as the
-stock arm: **roughly 215 seconds per recognition sample against the stock arm's 10**, at a decode
-rate of ~51 tok/s that is unchanged between arms. The model emits far more, it is not slower. On
-schema-bound prompts the effect is much smaller, about 1.28×. Project evaluation and
-repository-scale runtimes from the schema-bound ratio, not the open-ended one.
+stock arm: **roughly 45 seconds per recognition sample against the stock arm's 10**, at a decode
+rate of ~51 tok/s that is unchanged between arms. The model emits several times more, it is not
+slower. That puts a K=5 pass at a few hours rather than the stock arm's half hour, which is a
+scheduling fact rather than a reason not to run it.
 
 ---
 
