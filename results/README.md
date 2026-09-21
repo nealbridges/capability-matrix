@@ -1,10 +1,12 @@
 # Results
 
 One directory per model. Every result carries the exact conditions that produced it — model,
-quantization, topology, serving image digest and version, and observed throughput.
+quantization, topology, serving image and version, and observed throughput. Where an image cannot be
+pinned by digest the row says so rather than implying it can.
 
 | Model | Serving | Levels | Method | Corpus |
 |---|---|---|---|---|
+| [DeepSeek-V4.1-Flash EXL3 (abliterated vs stock)](deepseek-v4.1-flash-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2 | v3 | v2 |
 | [GLM-5.3-Flash EXL3 (abliterated vs stock)](glm-5.3-flash-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2 | v2 | v1.1 |
 | [DeepSeek-V4-Flash-0731 (abliterated)](deepseek-v4-flash-0731-abliterated/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2 | v1 | v1 |
 

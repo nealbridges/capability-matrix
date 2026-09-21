@@ -28,6 +28,8 @@ Nobody should claim L3 capability from an L2 result. That includes us.
 
 ## Results
 
+- [DeepSeek-V4.1-Flash EXL3 (abliterated vs stock)](results/deepseek-v4.1-flash-exl3/RESULTS.md) — 2× DGX Spark, TP=2
+- [GLM-5.3-Flash EXL3 (abliterated vs stock)](results/glm-5.3-flash-exl3/RESULTS.md) — 2× DGX Spark, TP=2
 - [DeepSeek-V4-Flash-0731 (abliterated)](results/deepseek-v4-flash-0731-abliterated/RESULTS.md) — 2× DGX Spark, TP=2
 
 ## What is not here
