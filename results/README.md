@@ -6,6 +6,7 @@ pinned by digest the row says so rather than implying it can.
 
 | Model | Serving | Levels | Method | Corpus |
 |---|---|---|---|---|
+| [DeepSeek-V4.1-Flash-1017 EXL3 (abliterated vs stock)](deepseek-v4.1-flash-1017-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2, L2.x | v3 | v2 |
 | [MiMo-V2.6-Flash](mimo-v2.6-flash/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2, L2.x | v3[^p] | v2 |
 | [DeepSeek-V4.1-Flash EXL3 (abliterated vs stock)](deepseek-v4.1-flash-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2 | v3 | v2 |
 | [GLM-5.3-Flash EXL3 (abliterated vs stock)](glm-5.3-flash-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2 | v2 | v1.1 |
