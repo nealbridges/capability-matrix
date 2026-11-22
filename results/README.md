@@ -6,8 +6,10 @@ pinned by digest the row says so rather than implying it can.
 
 | Model | Serving | Levels | Method | Corpus |
 |---|---|---|---|---|
+| [Inkling 2 Mini (official weights)](inkling-2-mini/RESULTS.md) | 1× DGX Spark, TP=1 | L1, L2, L2.x, expert scenarios | v3[^t] | v2 |
 | [DeepSeek-V4.1-Flash-1017 EXL3 (abliterated vs stock)](deepseek-v4.1-flash-1017-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2, L2.x | v3 | v2 |
 | [MiMo-V2.6-Flash](mimo-v2.6-flash/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2, L2.x | v3[^p] | v2 |
+| [Kimi-3.1PRO-DERISKED-R2 (remote K31 endpoint)](kimi-3.1pro-derisked-r2/RESULTS.md) | external vLLM, TP=8, cloud lane | L1, L2, L2.x, expert scenarios, red team | v3 | v2 |
 | [DeepSeek-V4.1-Flash EXL3 (abliterated vs stock)](deepseek-v4.1-flash-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2 | v3 | v2 |
 | [GLM-5.3-Flash EXL3 (abliterated vs stock)](glm-5.3-flash-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2 | v2 | v1.1 |
 | [DeepSeek-V4-Flash-0731 (abliterated)](deepseek-v4-flash-0731-abliterated/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2 | v1 | v1 |
@@ -22,3 +24,6 @@ pattern-match number. Prior results are not re-run when the method improves — 
 the version stamped on them. See [METHOD.md](../METHOD.md).
 
 [^p]: Gate P scored by pattern match this release; the rubric re-grade was not run. See that result's Limitations.
+
+[^t]: Measured at the vendor's shipped sampling temperature of 1.0 rather than the temperature 0 used by the other
+rows. That model loops to its token cap under greedy decoding. See that result's "The temperature deviation."
