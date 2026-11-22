@@ -1,1 +1,52 @@
 .DS_Store
+*.tmp
+*.bak
+*.orig
+
+# ---------------------------------------------------------------------------
+# This repo is PUBLIC, and it is a git repo of its own nested inside a private
+# parent. The parent's .gitignore covers this directory from the OUTSIDE, which
+# gives commits made in here no protection at all. So this file is a whitelist:
+# nothing under results/ is publishable unless it is named below.
+#
+# Only RESULTS.md is ever published from a row. Run artifacts, transcripts,
+# judge queues, answer keys and bench output are working material and stay
+# local — answer keys never publish (RELEASE_PLAYBOOK standing rule 6).
+# A row that is not listed here is not publishable, whatever it contains.
+# ---------------------------------------------------------------------------
+
+results/*
+
+!results/README.md
+
+!results/deepseek-v4-flash-0731-abliterated/
+results/deepseek-v4-flash-0731-abliterated/*
+!results/deepseek-v4-flash-0731-abliterated/RESULTS.md
+
+!results/glm-5.3-flash-exl3/
+results/glm-5.3-flash-exl3/*
+!results/glm-5.3-flash-exl3/RESULTS.md
+
+!results/deepseek-v4.1-flash-exl3/
+results/deepseek-v4.1-flash-exl3/*
+!results/deepseek-v4.1-flash-exl3/RESULTS.md
+
+!results/mimo-v2.6-flash/
+results/mimo-v2.6-flash/*
+!results/mimo-v2.6-flash/RESULTS.md
+
+!results/deepseek-v4.1-flash-1017-exl3/
+results/deepseek-v4.1-flash-1017-exl3/*
+!results/deepseek-v4.1-flash-1017-exl3/RESULTS.md
+
+!results/kimi-3.1pro-derisked-r2/
+results/kimi-3.1pro-derisked-r2/*
+!results/kimi-3.1pro-derisked-r2/RESULTS.md
+
+!results/kimi-3.1pro-derisked-r2-redteam/
+results/kimi-3.1pro-derisked-r2-redteam/*
+!results/kimi-3.1pro-derisked-r2-redteam/RESULTS.md
+
+!results/inkling-2-mini/
+results/inkling-2-mini/*
+!results/inkling-2-mini/RESULTS.md

@@ -6,6 +6,7 @@ pinned by digest the row says so rather than implying it can.
 
 | Model | Serving | Levels | Method | Corpus |
 |---|---|---|---|---|
+| [Inkling 2 Mini (official weights)](inkling-2-mini/RESULTS.md) | 1× DGX Spark, TP=1 | L1, L2, L2.x, expert scenarios | v3[^t] | v2 |
 | [DeepSeek-V4.1-Flash-1017 EXL3 (abliterated vs stock)](deepseek-v4.1-flash-1017-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2, L2.x | v3 | v2 |
 | [MiMo-V2.6-Flash](mimo-v2.6-flash/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2, L2.x | v3[^p] | v2 |
 | [DeepSeek-V4.1-Flash EXL3 (abliterated vs stock)](deepseek-v4.1-flash-exl3/RESULTS.md) | 2× DGX Spark, TP=2 | L1, L2 | v3 | v2 |
@@ -22,3 +23,6 @@ pattern-match number. Prior results are not re-run when the method improves — 
 the version stamped on them. See [METHOD.md](../METHOD.md).
 
 [^p]: Gate P scored by pattern match this release; the rubric re-grade was not run. See that result's Limitations.
+
+[^t]: Measured at the vendor's shipped sampling temperature of 1.0 rather than the temperature 0 used by the other
+rows. That model loops to its token cap under greedy decoding. See that result's "The temperature deviation."
